@@ -1,8 +1,15 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# =========================================================================
+# RATSFRONTEND - GITIGNORE CONFIGURATION (Next.js & Frontend)
+# =========================================================================
 
-# dependencies
+# 1. Dependencies & Package Managers
+# -------------------------------------------------------------------------
+node_modules/
 /node_modules
-/.pnp
+jspm_packages/
+web_modules/
+.pnp
+.pnp.js
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -10,32 +17,108 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
-/.next/
+# 2. Next.js & Build Outputs
+# -------------------------------------------------------------------------
+.next/
 /out/
+/build/
+/dist/
+target/
+.docusaurus/
+.serverless/
+.fusebox/
+.dynamodb/
 
-# production
-/build
+# 3. Environment Variables & Secrets (CRITICAL)
+# -------------------------------------------------------------------------
+# Ignore all actual secret files containing credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
 
-# misc
-.DS_Store
+# BUT, allow pushing template env configurations so others know what keys to set up:
+!.env.example
+
+# SSH & security keys
 *.pem
+*.key
+*.pub
+*.cert
+*.pfx
 
-# debug
+# 4. Operating System Junk
+# -------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.Trashes
+VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# 5. IDEs & Text Editors
+# -------------------------------------------------------------------------
+# VS Code
+.vscode/
+
+# JetBrains (WebStorm, PhpStorm, IntelliJ, Rider, etc.)
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# General editor temps & configs
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+.elasticbeanstalk/
+
+# 6. Logs & Debugging
+# -------------------------------------------------------------------------
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+logs/
+*.log.*
 
-# env files (can opt-in for committing if needed)
-.env*
+# 7. Testing, Coverage, and Reports
+# -------------------------------------------------------------------------
+/coverage/
+.nyc_output/
+.lighthouseci/
+cypress/screenshots/
+cypress/videos/
+.cypress-cache/
+.jest/
+junit.xml
 
-# vercel
-.vercel
-
-# typescript
+# 8. TypeScript & Build Info
+# -------------------------------------------------------------------------
 *.tsbuildinfo
 next-env.d.ts
