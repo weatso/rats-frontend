@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+
 interface Branch {
   id: number;
   name: string;
@@ -32,7 +34,7 @@ export default function EquipmentSection() {
 
   // Fetch active branches on mount
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/branches')
+    fetch(`${API_BASE}/api/branches`)
       .then((res) => res.json())
       .then((data) => setBranches(data.data || []))
       .catch((err) => console.error('Error fetching branches:', err));
@@ -47,14 +49,12 @@ export default function EquipmentSection() {
     }
 
     setLoading(true);
-    
-    // Fetch Games
-    const fetchGames = fetch(`http://127.0.0.1:8000/api/branches/${selectedBranchId}/games`)
+
+    const fetchGames = fetch(`${API_BASE}/api/branches/${selectedBranchId}/games`)
       .then((res) => res.json())
       .then((data) => setGames(data.data || []));
 
-    // Fetch F&B Menu
-    const fetchFnb = fetch(`http://127.0.0.1:8000/api/branches/${selectedBranchId}/fnb`)
+    const fetchFnb = fetch(`${API_BASE}/api/branches/${selectedBranchId}/fnb`)
       .then((res) => res.json())
       .then((data) => setFnbItems(data.data || []));
 
@@ -76,10 +76,10 @@ export default function EquipmentSection() {
             Select Your Equipment
           </span>
           <h2 className="text-4xl md:text-5xl font-black text-white mt-4 tracking-tight">
-            GAMES & FNB MENU
+            GAMES &amp; FNB MENU
           </h2>
           <p className="text-gray-400 mt-2 max-w-xl mx-auto">
-            Choose your preferred gaming branch below to view its specific game collection and food & beverage menus.
+            Choose your preferred gaming branch below to view its specific game collection and food &amp; beverage menus.
           </p>
         </div>
 
@@ -119,7 +119,6 @@ export default function EquipmentSection() {
             <p className="text-gray-400 mt-4 font-medium">Loading exclusive branch items...</p>
           </div>
         ) : !selectedBranchId ? (
-          // Blank State
           <div className="text-center py-20 bg-neutral-950/40 border border-dashed border-neutral-800/80 rounded-[2.5rem]">
             <span className="text-5xl block mb-4">🎮</span>
             <h3 className="text-xl font-bold text-white">Select a Branch First</h3>
@@ -129,7 +128,7 @@ export default function EquipmentSection() {
           </div>
         ) : (
           <div className="space-y-20">
-            {/* 1. Games List */}
+            {/* Games List */}
             <div>
               <div className="flex items-center gap-3 mb-8 border-b border-neutral-800 pb-4">
                 <span className="text-2xl">👾</span>
@@ -170,7 +169,7 @@ export default function EquipmentSection() {
                           {game.title}
                         </h4>
                       </div>
-                      <span className="text-2xs font-extrabold uppercase tracking-widest text-gray-500 mt-4 block">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-gray-500 mt-4 block">
                         {game.category}
                       </span>
                     </div>
@@ -179,12 +178,12 @@ export default function EquipmentSection() {
               )}
             </div>
 
-            {/* 2. Food & Beverages Menu */}
+            {/* Food & Beverages Menu */}
             <div>
               <div className="flex items-center gap-3 mb-8 border-b border-neutral-800 pb-4">
                 <span className="text-2xl">🍔</span>
                 <h3 className="text-2xl font-black text-white tracking-tight uppercase">
-                  Food & Beverages Menu
+                  Food &amp; Beverages Menu
                 </h3>
                 <span className="text-xs bg-red-500/10 text-red-500 border border-red-500/20 px-2.5 py-0.5 rounded-full font-bold">
                   {fnbItems.length} Options
@@ -206,7 +205,7 @@ export default function EquipmentSection() {
                         {item.image ? (
                           <div className="aspect-square w-full rounded-2xl overflow-hidden mb-4 bg-neutral-950">
                             <img
-                              src={`http://127.0.0.1:8000/storage/${item.image}`}
+                              src={`${API_BASE}/storage/${item.image}`}
                               alt={item.name}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
@@ -216,7 +215,7 @@ export default function EquipmentSection() {
                             🍿
                           </div>
                         )}
-                        <span className="text-2xs font-extrabold uppercase tracking-widest text-red-500 bg-red-500/5 px-2 py-0.5 rounded-md border border-red-500/10 inline-block mb-2">
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-red-500 bg-red-500/5 px-2 py-0.5 rounded-md border border-red-500/10 inline-block mb-2">
                           {item.category}
                         </span>
                         <h4 className="text-lg font-bold text-white group-hover:text-red-500 transition-colors duration-300">

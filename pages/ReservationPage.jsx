@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 import emailjs from '@emailjs/browser'
 import RatsLogo from '../components/RatsLogo'
 
-// PERBAIKAN: Baris import RoomBiasaImg, RuangBalapImg, dan VVIPRoomImg sudah dihapus.
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
 
 const STEPS = [
   { id: 0, title: 'Cabang', subtitle: 'Pilih lokasi bermain' },
@@ -15,56 +15,19 @@ const STEPS = [
   { id: 4, title: 'Konfirmasi', subtitle: 'Selesaikan pesanan' },
 ]
 
-const BRANCHES = [
-  { id: '01', name: 'RATS 01 - Simongan', location: 'Simongan No 57, Semarang' },
-  { id: '02', name: 'RATS 02 - Mulawarman D', location: 'Mulawarman Raya 11D, Semarang' },
-  { id: '03', name: 'RATS 03 - Mulawarman A', location: 'Mulawarman Raya 11A, Semarang' },
-  { id: '5A', name: 'RATS 05 - Pleburan', location: 'Pleburan Barat 7A, Semarang' }
-]
-
-// PERBAIKAN: Setiap properti `image` sekarang menggunakan string path langsung ke public/assets/
-const ROOM_DATA = {
-  '01': [
-    { id: 'v_priv_ps5', name: 'VIP PRIVATE PS 5', price: 25000, image: '/assets/VVIPRoom.jpg' },
-    { id: 'l2_ps5', name: 'LANTAI 2 - PS 5', price: 18000, image: '/assets/RuangBalap.jpg' },
-    { id: 'l2_ps4', name: 'LANTAI 2 - PS 4 PRO', price: 12000, image: '/assets/RoomBiasa.jpg' },
-    { id: 'l1_ps4', name: 'LANTAI 1 - PS 4 PRO', price: 10000, image: '/assets/RoomBiasa.jpg' },
-  ],
-  '02': [
-    { id: 'vvip_02', name: 'VVIP ROOM (PS 5 + NINTENDO)', price: 30000, image: '/assets/VVIPRoom.jpg' },
-    { id: 'vip_ps5_02', name: 'VIP PRIVATE PS 5', price: 25000, image: '/assets/VVIPRoom.jpg' },
-    { id: 'vip_ps4_02', name: 'VIP PRIVATE PS 4 PRO', price: 20000, image: '/assets/RoomBiasa.jpg' },
-    { id: 'l2_ps4_02', name: 'PS 4 PRO - LANTAI 2', price: 12000, image: '/assets/RoomBiasa.jpg' },
-    { id: 'l1_ps4_02', name: 'PS 4 PRO - LANTAI 1', price: 10000, image: '/assets/RoomBiasa.jpg' },
-  ],
-  '03': [
-    { id: 'vvip', name: 'VVIP ROOM (PS 5 + NINTENDO)', price: 35000, image: '/assets/VVIPRoom.jpg' },
-    { id: 'racing', name: 'RACING SIMULATOR (PS 5 PRO)', price: 30000, image: '/assets/RuangBalap.jpg' },
-    { id: 'vip_ps4', name: 'VIP PS4 PRO + NINTENDO', price: 25000, image: '/assets/RoomBiasa.jpg' },
-    { id: 'standard_ps4', name: 'PS 4 PRO - LANTAI 1', price: 10000, image: '/assets/RoomBiasa.jpg' },
-  ],
-  '5A': [
-    { id: 'vvip_05', name: 'PS 5 VVIP + NINTENDO', price: 35000, image: '/assets/VVIPRoom.jpg' },
-    { id: 'vip_ps5_05', name: 'PS 5 VIP + NINTENDO', price: 30000, image: '/assets/VVIPRoom.jpg' },
-    { id: 'racing_05', name: 'PS 5 PRO RACING SIMULATOR', price: 30000, image: '/assets/RuangBalap.jpg' },
-    { id: 'vip_ps4_05', name: 'PS 4 PRO VIP + NINTENDO', price: 25000, image: '/assets/RoomBiasa.jpg' },
-    { id: 'l1_ps4_05', name: 'PS 4 PRO LANTAI 1', price: 10000, image: '/assets/RoomBiasa.jpg' },
-  ]
-}
-
 const TIME_SLOTS = [
-  { label: '09:00', val: 9 }, { label: '10:00', val: 10 }, { label: '11:00', val: 11 }, 
-  { label: '12:00', val: 12 }, { label: '13:00', val: 13 }, { label: '14:00', val: 14 }, 
-  { label: '15:00', val: 15 }, { label: '16:00', val: 16 }, { label: '17:00', val: 17 }, 
-  { label: '18:00', val: 18 }, { label: '19:00', val: 19 }, { label: '20:00', val: 20 }, 
-  { label: '21:00', val: 21 }, { label: '22:00', val: 22 }, { label: '23:00', val: 23 }, 
+  { label: '09:00', val: 9 }, { label: '10:00', val: 10 }, { label: '11:00', val: 11 },
+  { label: '12:00', val: 12 }, { label: '13:00', val: 13 }, { label: '14:00', val: 14 },
+  { label: '15:00', val: 15 }, { label: '16:00', val: 16 }, { label: '17:00', val: 17 },
+  { label: '18:00', val: 18 }, { label: '19:00', val: 19 }, { label: '20:00', val: 20 },
+  { label: '21:00', val: 21 }, { label: '22:00', val: 22 }, { label: '23:00', val: 23 },
   { label: '00:00', val: 24 }, { label: '01:00', val: 25 }, { label: '02:00', val: 26 }
 ]
 const CLOSING_TIME = 27
 
 export default function ReservationPage({ onBackToHome, isDarkMode }) {
   const [step, setStep] = useState(0)
-  const [isStepsExpanded, setIsStepsExpanded] = useState(false) // New state for mobile toggle
+  const [isStepsExpanded, setIsStepsExpanded] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [copied, setCopied] = useState(false)
   const [bookingId, setBookingId] = useState('')
@@ -72,7 +35,7 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
   const [isSendingEmail, setIsSendingEmail] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  
+
   const [reservationData, setReservationData] = useState({
     branch: null,
     room: null,
@@ -110,13 +73,13 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
   const [dbRooms, setDbRooms] = useState([])
 
   useEffect(() => {
-    // Fetch branches and rooms dynamically from Laravel API!
-    fetch('http://127.0.0.1:8000/api/branches')
+    // Fetch branches and rooms from dynamic API endpoint
+    fetch(`${API_BASE}/api/branches`)
       .then(res => res.json())
       .then(data => setDbBranches(data.data || []))
       .catch(err => console.error('Error fetching branches:', err))
 
-    fetch('http://127.0.0.1:8000/api/rooms')
+    fetch(`${API_BASE}/api/rooms`)
       .then(res => res.json())
       .then(data => setDbRooms(data.data || []))
       .catch(err => console.error('Error fetching rooms:', err))
@@ -141,7 +104,6 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }).catch(() => {
-      // Fallback for older browsers
       const el = document.createElement('textarea')
       el.value = text
       document.body.appendChild(el)
@@ -171,9 +133,9 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
     }
 
     emailjs.send(
-      'service_cp91h8w', 
-      'template_d1rio69', 
-      templateParams, 
+      'service_cp91h8w',
+      'template_d1rio69',
+      templateParams,
       '5ljR8WaMhxCYC_SqA'
     )
     .then(() => {
@@ -191,31 +153,30 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
   const handleSubmit = async () => {
     setIsLoading(true)
     setError(null)
-    
-    try {
-      // Panggil API Laravel kita
-      const response = await fetch('http://127.0.0.1:8000/api/reservations', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-          },
-          body: JSON.stringify({
-              branch_id: reservationData.branch,
-              room_id: reservationData.room,
-              customer_name: reservationData.name,
-              customer_phone: reservationData.whatsapp,
-              customer_email: reservationData.email,
-              start_time: `${reservationData.date} ${reservationData.startTime}:00`,
-              duration_hours: reservationData.duration,
-              notes: reservationData.notes || ''
-          })
-      });
 
-      const data = await response.json();
-      
+    try {
+      const response = await fetch(`${API_BASE}/api/reservations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          branch_id: reservationData.branch,
+          room_id: reservationData.room,
+          customer_name: reservationData.name,
+          customer_phone: reservationData.whatsapp,
+          customer_email: reservationData.email,
+          start_time: `${reservationData.date} ${reservationData.startTime}:00`,
+          duration_hours: reservationData.duration,
+          notes: reservationData.notes || ''
+        })
+      })
+
+      const data = await response.json()
+
       if (!response.ok) {
-          throw new Error(data.message || 'Gagal menyimpan ke server RATS Game');
+        throw new Error(data.message || 'Gagal menyimpan ke server RATS Game')
       }
 
       setBookingId(`RATS-${data.data.id}`)
@@ -244,38 +205,38 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full">
           <div className={`relative ${isDarkMode ? 'bg-[#1a1f24]' : 'bg-white'} rounded-[2.5rem] shadow-2xl border ${isDarkMode ? 'border-white/5' : 'border-transparent'} overflow-hidden`}>
             <div className="bg-brand-pink p-8 text-white text-center">
-                <Check size={32} className="mx-auto mb-4" />
-                <h2 className="text-2xl font-display uppercase tracking-widest">Reservation Success</h2>
+              <Check size={32} className="mx-auto mb-4" />
+              <h2 className="text-2xl font-display uppercase tracking-widest">Reservation Success</h2>
             </div>
             <div className="p-8 space-y-6">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Booking ID</span>
-                        <p className={`text-xl font-display ${theme.text}`}>{bookingId}</p>
-                    </div>
-                    <RatsLogo isDarkMode={isDarkMode} className="w-20 h-20" />
+              <div className="flex justify-between items-start">
+                <div>
+                  <span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Booking ID</span>
+                  <p className={`text-xl font-display ${theme.text}`}>{bookingId}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Name</span><p className={`text-sm font-bold ${theme.text}`}>{reservationData.name}</p></div>
-                    <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Branch</span><p className={`text-sm font-bold ${theme.text}`}>{selectedBranch?.id}</p></div>
+                <RatsLogo isDarkMode={isDarkMode} className="w-20 h-20" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Name</span><p className={`text-sm font-bold ${theme.text}`}>{reservationData.name}</p></div>
+                <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Branch</span><p className={`text-sm font-bold ${theme.text}`}>{selectedBranch?.id}</p></div>
+              </div>
+              <div className="p-4 rounded-2xl bg-brand-pink/10 border border-brand-pink/20">
+                <p className="text-lg font-bold text-brand-pink">{selectedRoom?.name}</p>
+                <p className={`text-[10px] ${theme.textMuted}`}>{reservationData.date} | {reservationData.startTime}</p>
+              </div>
+              <div className="flex justify-between items-end border-t border-white/5 pt-4">
+                <div>
+                  <span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Grand Total</span>
+                  <p className="text-3xl font-display text-brand-pink">IDR {totalPrice.toLocaleString()}</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-brand-pink/10 border border-brand-pink/20">
-                    <p className="text-lg font-bold text-brand-pink">{selectedRoom?.name}</p>
-                    <p className={`text-[10px] ${theme.textMuted}`}>{reservationData.date} | {reservationData.startTime}</p>
-                </div>
-                <div className="flex justify-between items-end border-t border-white/5 pt-4">
-                    <div>
-                        <span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Grand Total</span>
-                        <p className="text-3xl font-display text-brand-pink">IDR {totalPrice.toLocaleString()}</p>
-                    </div>
-                    <Smartphone size={32} className={theme.textMuted} />
-                </div>
+                <Smartphone size={32} className={theme.textMuted} />
+              </div>
             </div>
           </div>
           <div className="mt-8 space-y-4 print:hidden">
             <button onClick={handleSendEmail} disabled={isSendingEmail} className={`w-full py-5 rounded-full flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs shadow-xl transition-all ${isEmailSent ? 'bg-green-500 text-white' : 'bg-brand-pink text-white'}`}>
-                {isSendingEmail ? <Loader2 className="animate-spin" /> : (isEmailSent ? <Check /> : <Mail />)}
-                {isSendingEmail ? 'MENGIRIM...' : (isEmailSent ? 'EMAIL TERKIRIM!' : 'KIRIM NOTA KE EMAIL')}
+              {isSendingEmail ? <Loader2 className="animate-spin" /> : (isEmailSent ? <Check /> : <Mail />)}
+              {isSendingEmail ? 'MENGIRIM...' : (isEmailSent ? 'EMAIL TERKIRIM!' : 'KIRIM NOTA KE EMAIL')}
             </button>
             <button onClick={() => window.print()} className="w-full py-5 rounded-full bg-brand-black text-white dark:bg-white dark:text-brand-black font-bold uppercase tracking-widest text-xs shadow-xl">SIMPAN PDF</button>
             <button onClick={onBackToHome} className={`${theme.textMuted} w-full text-[10px] font-bold uppercase tracking-widest text-center`}>Kembali Ke Beranda</button>
@@ -287,19 +248,18 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
 
   return (
     <div className={`h-screen flex flex-col md:flex-row overflow-hidden ${theme.sidebarBg} transition-all duration-700`}>
-      {/* SIDEBAR / MOBILE STEPS */}
+      {/* SIDEBAR */}
       <aside className={`w-full md:w-1/4 h-auto md:h-full border-b md:border-r ${theme.border} flex flex-col z-20 transition-all duration-500`}>
-        {/* Mobile Header (Only visible on mobile) */}
-        <div 
+        <div
           onClick={() => setIsStepsExpanded(!isStepsExpanded)}
           className="flex md:hidden items-center justify-between p-6 cursor-pointer"
         >
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-brand-pink flex items-center justify-center text-xs font-bold text-white shadow-lg">
-                {step + 1}
+              {step + 1}
             </div>
             <div className="hidden xs:block">
-                <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${theme.text}`}>Progress</p>
+              <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${theme.text}`}>Progress</p>
             </div>
           </div>
           <motion.div
@@ -310,10 +270,9 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
           </motion.div>
         </div>
 
-        {/* Collapsible Steps Content */}
-        <motion.div 
+        <motion.div
           initial={false}
-          animate={{ 
+          animate={{
             height: isStepsExpanded ? 'auto' : 0,
             opacity: isStepsExpanded ? 1 : 0
           }}
@@ -332,18 +291,18 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
               ))}
             </nav>
           </div>
-          
+
           <div className="flex-1 p-6 lg:p-8 hidden md:block">
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-pink mb-4 lg:mb-6">Live Receipt</h4>
-              <div className="space-y-4">
-                  <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Location</span><span className={`text-sm ${theme.text} truncate`}>{selectedBranch?.name || '--'}</span></div>
-                  <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Room</span><span className={`text-sm ${theme.text} truncate`}>{selectedRoom?.name || '--'}</span></div>
-                  <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Schedule</span><span className={`text-sm ${theme.text} truncate`}>{reservationData.date} | {reservationData.startTime}</span></div>
-              </div>
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-pink mb-4 lg:mb-6">Live Receipt</h4>
+            <div className="space-y-4">
+              <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Location</span><span className={`text-sm ${theme.text} truncate`}>{selectedBranch?.name || '--'}</span></div>
+              <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Room</span><span className={`text-sm ${theme.text} truncate`}>{selectedRoom?.name || '--'}</span></div>
+              <div className="flex flex-col"><span className={`text-[8px] uppercase tracking-widest ${theme.textMuted}`}>Schedule</span><span className={`text-sm ${theme.text} truncate`}>{reservationData.date} | {reservationData.startTime}</span></div>
+            </div>
           </div>
           <div className="p-6 lg:p-8 border-t border-white/5 bg-white/5 hidden md:block mt-auto shrink-0">
-              <span className={`text-[10px] uppercase tracking-widest ${theme.textMuted}`}>Grand Total</span>
-              <span className="block text-2xl lg:text-3xl font-display text-brand-pink">IDR {totalPrice.toLocaleString()}</span>
+            <span className={`text-[10px] uppercase tracking-widest ${theme.textMuted}`}>Grand Total</span>
+            <span className="block text-2xl lg:text-3xl font-display text-brand-pink">IDR {totalPrice.toLocaleString()}</span>
           </div>
         </motion.div>
       </aside>
@@ -352,125 +311,125 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
       <div className="flex-1 flex flex-col h-full relative overflow-hidden">
         <main className={`flex-1 overflow-y-auto p-8 md:p-16 ${theme.mainBg} transition-all duration-700`}>
           <header className="mb-12">
-              <h1 className={`text-3xl md:text-6xl font-display uppercase tracking-tightest ${theme.text}`}>{STEPS[step].title}</h1>
-              <p className={`${theme.textMuted} text-xs md:text-sm uppercase tracking-widest mt-2`}>{STEPS[step].subtitle}</p>
+            <h1 className={`text-3xl md:text-6xl font-display uppercase tracking-tightest ${theme.text}`}>{STEPS[step].title}</h1>
+            <p className={`${theme.textMuted} text-xs md:text-sm uppercase tracking-widest mt-2`}>{STEPS[step].subtitle}</p>
           </header>
 
           <AnimatePresence mode="wait">
             <motion.div key={step} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="pb-20">
-                {error && <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl flex items-center gap-2"><AlertCircle size={18}/>{error}</div>}
+              {error && <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl flex items-center gap-2"><AlertCircle size={18}/>{error}</div>}
 
-                {step === 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {dbBranches.map(b => (
-                            <button key={b.id} onClick={() => handleSelect('branch', b.id)} className={`p-8 rounded-3xl border-2 text-left transition-all ${reservationData.branch === b.id ? 'border-brand-blue bg-brand-blue/10' : theme.border + ' ' + theme.cardBg}`}>
-                                <MapPin className="mb-4 text-brand-pink" size={32} />
-                                <h3 className={`text-2xl font-bold ${theme.text}`}>{b.name}</h3>
-                                <p className={`text-sm ${theme.textMuted}`}>{b.address}</p>
-                            </button>
-                        ))}
+              {step === 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {dbBranches.map(b => (
+                    <button key={b.id} onClick={() => handleSelect('branch', b.id)} className={`p-8 rounded-3xl border-2 text-left transition-all ${reservationData.branch === b.id ? 'border-brand-blue bg-brand-blue/10' : theme.border + ' ' + theme.cardBg}`}>
+                      <MapPin className="mb-4 text-brand-pink" size={32} />
+                      <h3 className={`text-2xl font-bold ${theme.text}`}>{b.name}</h3>
+                      <p className={`text-sm ${theme.textMuted}`}>{b.address}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {step === 1 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {rooms.map(r => (
+                    <button key={r.id} onClick={() => handleSelect('room', r.id)} className={`flex flex-col rounded-2xl border-2 text-left transition-all overflow-hidden ${reservationData.room === r.id ? 'border-brand-pink bg-brand-pink/10' : theme.border + ' ' + theme.cardBg}`}>
+                      <img src={r.image || '/assets/RoomBiasa.jpg'} className="w-full aspect-video object-cover" />
+                      <div className="p-6">
+                        <h3 className={`font-bold ${theme.text} mb-1`}>{r.name}</h3>
+                        <p className="text-brand-pink font-display text-xl">IDR {r.price_per_hour ? r.price_per_hour.toLocaleString() : '0'}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="space-y-12">
+                  <section>
+                    <h4 className={`text-[10px] font-bold uppercase tracking-widest ${theme.textMuted} mb-6`}>01. PILIH TANGGAL</h4>
+                    <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                      {dates.map((d, i) => (
+                        <button key={i} onClick={() => handleSelect('date', d.full)} className={`flex-shrink-0 w-24 h-32 rounded-2xl border-2 flex flex-col items-center justify-center transition-all ${reservationData.date === d.full ? 'border-brand-pink bg-brand-pink text-white shadow-lg' : theme.inputBorder + ' ' + theme.cardBg + ' ' + (isDarkMode ? 'text-white' : 'text-brand-black')}`}>
+                          <span className="text-3xl font-display">{d.day}</span>
+                          <span className="text-[10px] font-bold uppercase mt-1 opacity-60">{d.month}</span>
+                        </button>
+                      ))}
                     </div>
-                )}
+                  </section>
 
-                {step === 1 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {rooms.map(r => (
-                            <button key={r.id} onClick={() => handleSelect('room', r.id)} className={`flex flex-col rounded-2xl border-2 text-left transition-all overflow-hidden ${reservationData.room === r.id ? 'border-brand-pink bg-brand-pink/10' : theme.border + ' ' + theme.cardBg}`}>
-                                <img src={r.image || '/assets/RoomBiasa.jpg'} className="w-full aspect-video object-cover" />
-                                <div className="p-6">
-                                    <h3 className={`font-bold ${theme.text} mb-1`}>{r.name}</h3>
-                                    <p className="text-brand-pink font-display text-xl">IDR {r.price_per_hour ? r.price_per_hour.toLocaleString() : '0'}</p>
-                                </div>
-                            </button>
-                        ))}
+                  <section>
+                    <h4 className={`text-[10px] font-bold uppercase tracking-widest ${theme.textMuted} mb-6`}>02. PILIH JAM MULAI</h4>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                      {TIME_SLOTS.map((t, i) => {
+                        const isValid = t.val + 1 <= CLOSING_TIME
+                        return (
+                          <button key={i} disabled={!isValid} onClick={() => handleSelect('startTime', t.label)} className={`py-4 rounded-xl border-2 font-mono transition-all ${reservationData.startTime === t.label ? 'border-brand-blue bg-brand-blue text-white shadow-lg' : (isValid ? theme.inputBorder + ' ' + (isDarkMode ? 'text-white/60' : 'text-brand-black/60') : 'opacity-10 cursor-not-allowed')}`}>
+                            {t.label}
+                          </button>
+                        )
+                      })}
                     </div>
-                )}
+                  </section>
 
-                {step === 2 && (
-                    <div className="space-y-12">
-                        <section>
-                            <h4 className={`text-[10px] font-bold uppercase tracking-widest ${theme.textMuted} mb-6`}>01. PILIH TANGGAL</h4>
-                            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                                {dates.map((d, i) => (
-                                    <button key={i} onClick={() => handleSelect('date', d.full)} className={`flex-shrink-0 w-24 h-32 rounded-2xl border-2 flex flex-col items-center justify-center transition-all ${reservationData.date === d.full ? 'border-brand-pink bg-brand-pink text-white shadow-lg' : theme.inputBorder + ' ' + theme.cardBg + ' ' + (isDarkMode ? 'text-white' : 'text-brand-black')}`}>
-                                        <span className="text-3xl font-display">{d.day}</span>
-                                        <span className="text-[10px] font-bold uppercase mt-1 opacity-60">{d.month}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </section>
-
-                        <section>
-                            <h4 className={`text-[10px] font-bold uppercase tracking-widest ${theme.textMuted} mb-6`}>02. PILIH JAM MULAI</h4>
-                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                                {TIME_SLOTS.map((t, i) => {
-                                    const isValid = t.val + 1 <= CLOSING_TIME
-                                    return (
-                                        <button key={i} disabled={!isValid} onClick={() => handleSelect('startTime', t.label)} className={`py-4 rounded-xl border-2 font-mono transition-all ${reservationData.startTime === t.label ? 'border-brand-blue bg-brand-blue text-white shadow-lg' : (isValid ? theme.inputBorder + ' ' + (isDarkMode ? 'text-white/60' : 'text-brand-black/60') : 'opacity-10 cursor-not-allowed')}`}>
-                                            {t.label}
-                                        </button>
-                                    )
-                                })}
-                            </div>
-                        </section>
-
-                        <section>
-                            <h4 className={`text-[10px] font-bold uppercase tracking-widest ${theme.textMuted} mb-6`}>03. PILIH DURASI</h4>
-                            <div className="flex gap-4">
-                                {[1, 3, 6, 8].map(d => {
-                                    const isValid = reservationData.startTimeVal + d <= CLOSING_TIME
-                                    return (
-                                        <button key={d} disabled={!isValid} onClick={() => handleSelect('duration', d)} className={`flex-1 py-5 rounded-2xl border-2 font-bold transition-all ${reservationData.duration === d ? 'border-brand-pink bg-brand-pink text-white shadow-lg' : (isValid ? theme.inputBorder + ' ' + (isDarkMode ? 'text-white/60' : 'text-brand-black/60') : 'opacity-10 cursor-not-allowed')}`}>
-                                            {d} JAM
-                                        </button>
-                                    )
-                                })}
-                            </div>
-                        </section>
+                  <section>
+                    <h4 className={`text-[10px] font-bold uppercase tracking-widest ${theme.textMuted} mb-6`}>03. PILIH DURASI</h4>
+                    <div className="flex gap-4">
+                      {[1, 3, 6, 8].map(d => {
+                        const isValid = reservationData.startTimeVal + d <= CLOSING_TIME
+                        return (
+                          <button key={d} disabled={!isValid} onClick={() => handleSelect('duration', d)} className={`flex-1 py-5 rounded-2xl border-2 font-bold transition-all ${reservationData.duration === d ? 'border-brand-pink bg-brand-pink text-white shadow-lg' : (isValid ? theme.inputBorder + ' ' + (isDarkMode ? 'text-white/60' : 'text-brand-black/60') : 'opacity-10 cursor-not-allowed')}`}>
+                            {d} JAM
+                          </button>
+                        )
+                      })}
                     </div>
-                )}
+                  </section>
+                </div>
+              )}
 
-                {step === 3 && (
-                    <div className="max-w-xl space-y-12">
-                        {['name', 'email', 'whatsapp'].map(f => (
-                            <div key={f} className="relative">
-                                <input type="text" name={f} value={reservationData[f]} onChange={(e) => handleSelect(f, e.target.value)} placeholder=" " className={`w-full bg-transparent border-b-2 ${theme.inputBorder} py-4 text-lg md:text-2xl ${theme.text} outline-none focus:border-brand-pink transition-all peer`} required />
-                                <label className={`absolute left-0 top-4 ${theme.textMuted} text-sm md:text-xl uppercase tracking-widest pointer-events-none transition-all peer-focus:-top-6 peer-focus:text-xs peer-focus:text-brand-pink peer-[:not(:placeholder-shown)]:-top-6`}>{f}</label>
-                            </div>
-                        ))}
+              {step === 3 && (
+                <div className="max-w-xl space-y-12">
+                  {['name', 'email', 'whatsapp'].map(f => (
+                    <div key={f} className="relative">
+                      <input type="text" name={f} value={reservationData[f]} onChange={(e) => handleSelect(f, e.target.value)} placeholder=" " className={`w-full bg-transparent border-b-2 ${theme.inputBorder} py-4 text-lg md:text-2xl ${theme.text} outline-none focus:border-brand-pink transition-all peer`} required />
+                      <label className={`absolute left-0 top-4 ${theme.textMuted} text-sm md:text-xl uppercase tracking-widest pointer-events-none transition-all peer-focus:-top-6 peer-focus:text-xs peer-focus:text-brand-pink peer-[:not(:placeholder-shown)]:-top-6`}>{f}</label>
                     </div>
-                )}
+                  ))}
+                </div>
+              )}
 
-                {step === 4 && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pb-10">
-                        <div className={`${theme.cardBg} p-10 rounded-[2.5rem] border ${theme.border} space-y-6 shadow-2xl`}>
-                            <h4 className="text-brand-pink font-bold text-xs uppercase tracking-[0.3em]">Summary</h4>
-                            <div className="flex justify-between border-b border-white/5 pb-4"><span className={theme.textMuted}>Branch</span><span className={theme.text}>{selectedBranch?.name}</span></div>
-                            <div className="flex justify-between border-b border-white/5 pb-4"><span className={theme.textMuted}>Room</span><span className={theme.text}>{selectedRoom?.name}</span></div>
-                            <div className="flex justify-between pt-4"><span className={theme.textMuted}>Total</span><span className="text-4xl text-brand-pink font-display">IDR {totalPrice.toLocaleString()}</span></div>
-                        </div>
-                        <div className="space-y-6">
-                            <h4 className="text-brand-pink font-bold text-xs uppercase tracking-[0.3em]">Payment</h4>
-                            <div className={`${theme.cardBg} p-8 rounded-[2rem] border ${theme.border} flex justify-between items-center`}>
-                                <div><span className="text-[8px] opacity-40 uppercase block mb-1">blu by BCA</span><p className={`text-2xl font-bold ${theme.text}`}>001 2345 6789</p></div>
-                                <button onClick={() => copyToClipboard('00123456789')} className="p-4 bg-brand-blue text-white rounded-2xl hover:scale-110 transition-all"><Copy size={20}/></button>
-                            </div>
-                        </div>
+              {step === 4 && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pb-10">
+                  <div className={`${theme.cardBg} p-10 rounded-[2.5rem] border ${theme.border} space-y-6 shadow-2xl`}>
+                    <h4 className="text-brand-pink font-bold text-xs uppercase tracking-[0.3em]">Summary</h4>
+                    <div className="flex justify-between border-b border-white/5 pb-4"><span className={theme.textMuted}>Branch</span><span className={theme.text}>{selectedBranch?.name}</span></div>
+                    <div className="flex justify-between border-b border-white/5 pb-4"><span className={theme.textMuted}>Room</span><span className={theme.text}>{selectedRoom?.name}</span></div>
+                    <div className="flex justify-between pt-4"><span className={theme.textMuted}>Total</span><span className="text-4xl text-brand-pink font-display">IDR {totalPrice.toLocaleString()}</span></div>
+                  </div>
+                  <div className="space-y-6">
+                    <h4 className="text-brand-pink font-bold text-xs uppercase tracking-[0.3em]">Payment</h4>
+                    <div className={`${theme.cardBg} p-8 rounded-[2rem] border ${theme.border} flex justify-between items-center`}>
+                      <div><span className="text-[8px] opacity-40 uppercase block mb-1">blu by BCA</span><p className={`text-2xl font-bold ${theme.text}`}>001 2345 6789</p></div>
+                      <button onClick={() => copyToClipboard('00123456789')} className="p-4 bg-brand-blue text-white rounded-2xl hover:scale-110 transition-all"><Copy size={20}/></button>
                     </div>
-                )}
+                  </div>
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
         </main>
 
         <footer className={`h-24 px-8 md:px-16 border-t ${theme.border} ${theme.sidebarBg} flex items-center justify-between z-40 bg-opacity-95 backdrop-blur-md`}>
-            <button onClick={step === 0 ? onBackToHome : () => setStep(step - 1)} className={`px-10 py-4 rounded-full border ${theme.inputBorder} ${theme.textMuted} font-bold uppercase text-[10px] tracking-[0.2em]`}>Back</button>
-            <button 
-                disabled={isLoading || (step === 0 && !reservationData.branch) || (step === 1 && !reservationData.room)} 
-                onClick={step === 4 ? handleSubmit : () => setStep(step + 1)} 
-                className={`bg-brand-pink text-white px-12 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] shadow-xl transition-all ${isLoading ? 'opacity-50' : 'hover:scale-105'}`}
-            >
-                {isLoading ? <Loader2 className="animate-spin" /> : (step === 4 ? 'Confirm & Finish' : 'Next Step')}
-            </button>
+          <button onClick={step === 0 ? onBackToHome : () => setStep(step - 1)} className={`px-10 py-4 rounded-full border ${theme.inputBorder} ${theme.textMuted} font-bold uppercase text-[10px] tracking-[0.2em]`}>Back</button>
+          <button
+            disabled={isLoading || (step === 0 && !reservationData.branch) || (step === 1 && !reservationData.room)}
+            onClick={step === 4 ? handleSubmit : () => setStep(step + 1)}
+            className={`bg-brand-pink text-white px-12 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] shadow-xl transition-all ${isLoading ? 'opacity-50' : 'hover:scale-105'}`}
+          >
+            {isLoading ? <Loader2 className="animate-spin" /> : (step === 4 ? 'Confirm & Finish' : 'Next Step')}
+          </button>
         </footer>
       </div>
     </div>

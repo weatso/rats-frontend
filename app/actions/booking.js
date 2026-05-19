@@ -1,8 +1,10 @@
 'use server'
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+
 export async function submitBooking(formData) {
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/reservations', {
+        const response = await fetch(`${API_BASE}/api/reservations`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -21,11 +23,11 @@ export async function submitBooking(formData) {
         });
 
         const data = await response.json();
-        
+
         if (!response.ok) {
             throw new Error(data.message || 'Gagal terhubung ke server RATS Game');
         }
-        
+
         return { success: true, data };
     } catch (error) {
         return { success: false, error: error.message };

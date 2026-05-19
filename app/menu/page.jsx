@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+
 // ─── F&B Data ────────────────────────────────────────────────────────────────
 const fnbCategories = [
   {
@@ -225,7 +227,7 @@ export default function FnbMenuPage() {
             </p>
           </div>
           <a
-            href="http://127.0.0.1:8000/admin/live-lobby"
+            href={`${API_BASE}/admin/live-lobby`}
             target="_blank"
             rel="noopener noreferrer"
             className="px-10 py-5 rounded-full bg-brand-pink text-white font-black uppercase text-sm tracking-widest hover:scale-105 transition-transform shadow-2xl shadow-brand-pink/20 whitespace-nowrap"
