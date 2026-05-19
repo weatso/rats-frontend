@@ -84,12 +84,14 @@ export default function Navbar({ toggleMenu, isOpen, isDarkMode, toggleTheme, on
           
           <div className="hidden lg:block">
             <MagneticButton>
-              <button 
-                onClick={onReservasi}
-                className={`${isDarkMode ? 'bg-brand-blue' : 'bg-brand-pink'} text-white px-6 py-2.5 rounded-full font-bold uppercase text-[9px] tracking-widest hover:scale-105 transition-transform shadow-lg ${isDarkMode ? 'shadow-brand-blue/20' : 'shadow-brand-pink/20'}`}
+              <a 
+                href="https://wa.me/6281234567890?text=Halo%20RATS%20GAME%2C%20saya%20ingin%20bertanya%20tentang%20reservasi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#25D366] hover:bg-[#20ba5a] text-white px-6 py-2.5 rounded-full font-bold uppercase text-[9px] tracking-widest hover:scale-105 transition-transform shadow-lg shadow-emerald-500/20"
               >
-                Reservasi
-              </button>
+                Chat Bot WA
+              </a>
             </MagneticButton>
           </div>
         </div>

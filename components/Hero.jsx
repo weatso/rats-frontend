@@ -2,7 +2,9 @@ import React, { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import MagneticButton from './MagneticButton'
 
-export default function Hero({ isDarkMode, onReservasi }) {
+const BACKEND_URL = 'http://127.0.0.1:8000'
+
+export default function Hero({ isDarkMode }) {
   const containerRef = useRef(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   
@@ -35,7 +37,6 @@ export default function Hero({ isDarkMode, onReservasi }) {
     ? "bg-gradient-to-b from-brand-black/20 via-brand-black/60 to-brand-black" 
     : "bg-gradient-to-b from-white/10 via-white/40 to-white"
 
-  // LOGIKA WARNA DINAMIS
   const accentColor = isDarkMode ? 'text-brand-blue' : 'text-brand-pink'
   const mainTextColor = isDarkMode ? 'text-white' : 'text-brand-black'
   const radialColor = isDarkMode ? 'rgba(45, 91, 255, 0.15)' : 'rgba(244, 52, 161, 0.15)'
@@ -65,7 +66,7 @@ export default function Hero({ isDarkMode, onReservasi }) {
       </motion.div>
 
       <div className="relative z-20 w-full max-w-[1800px] px-6 md:px-12 flex flex-col items-center text-center">
-        {/* Level UP */}
+        {/* LEVEL UP */}
         <div className="overflow-visible mb-2">
           <div className="overflow-hidden px-4 -mx-4 pt-16 -mt-16 pb-4">
             <motion.h1
@@ -100,13 +101,16 @@ export default function Hero({ isDarkMode, onReservasi }) {
             RATS ALWAYS LOVES YOU
           </p>
           
+          {/* Hard redirect to backend Live Lobby (booking flow) */}
           <MagneticButton>
-            <button 
-                onClick={onReservasi}
-                className={`px-12 py-5 rounded-full font-bold uppercase text-sm tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-xl ${isDarkMode ? 'bg-brand-blue text-white hover:bg-white hover:text-brand-black' : 'bg-brand-black text-white hover:bg-brand-pink'}`}
+            <a
+              href={`${BACKEND_URL}/admin/live-lobby`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`px-12 py-5 rounded-full font-bold uppercase text-sm tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-xl inline-block ${isDarkMode ? 'bg-brand-blue text-white hover:bg-white hover:text-brand-black' : 'bg-brand-black text-white hover:bg-brand-pink'}`}
             >
               Reservasi Sekarang
-            </button>
+            </a>
           </MagneticButton>
         </motion.div>
       </div>
