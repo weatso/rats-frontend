@@ -217,7 +217,7 @@ export default function Roster({ isDarkMode, onReservasi }) {
 
       {/* Console cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-        {consoles.map((item, i) => (
+      {consoles.map((item, i) => (
           <motion.div
             key={item.id || i}
             initial={{ opacity: 0, y: 50 }}
@@ -225,8 +225,8 @@ export default function Roster({ isDarkMode, onReservasi }) {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: (i % 2) * 0.2 }}
             className="group cursor-pointer"
-            onClick={onReservasi}
           >
+            <a href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.weatso.id/booking'} className="block">
             <div className={`relative aspect-[16/10] overflow-hidden rounded-sm mb-8 ${isDarkMode ? 'bg-white/5' : 'bg-brand-black/5'}`}>
               <motion.img
                 whileHover={{ scale: 1.05 }}
@@ -245,17 +245,18 @@ export default function Roster({ isDarkMode, onReservasi }) {
               </div>
             </div>
 
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className={`text-3xl md:text-4xl font-display font-medium uppercase tracking-tightest mb-2 group-hover:text-brand-pink transition-colors ${isDarkMode ? 'text-white' : 'text-brand-black'}`}>
-                  {item.name}
-                </h3>
-                <p className={`${isDarkMode ? 'text-white/40' : 'text-brand-black/60'} font-light max-w-xs`}>{item.desc}</p>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className={`text-3xl md:text-4xl font-display font-medium uppercase tracking-tightest mb-2 group-hover:text-brand-pink transition-colors ${isDarkMode ? 'text-white' : 'text-brand-black'}`}>
+                    {item.name}
+                  </h3>
+                  <p className={`${isDarkMode ? 'text-white/40' : 'text-brand-black/60'} font-light max-w-xs`}>{item.desc}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-display text-brand-pink">{item.price}</span>
+                </div>
               </div>
-              <div className="text-right">
-                <span className="text-2xl font-display text-brand-pink">{item.price}</span>
-              </div>
-            </div>
+            </a>
           </motion.div>
         ))}
       </div>

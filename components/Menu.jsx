@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Gamepad2 } from 'lucide-react'
 import MagneticButton from './MagneticButton'
 
 export default function Menu({ isOpen, toggleMenu, isDarkMode, onReservasi, onAbout, onBackToHome }) {
+  const router = useRouter()
   const [hoveredIndex, setHoveredIndex] = useState(null)
 
   // ── Five uniform giant nav items ──────────────────────────────────────────
@@ -38,7 +40,7 @@ export default function Menu({ isOpen, toggleMenu, isDarkMode, onReservasi, onAb
       title: 'F&B Menu',
       href: '/menu', // Navigate to dedicated F&B page
       action: () => {
-        window.open('/menu', '_self')
+        router.push('/menu')
         toggleMenu()
       },
     },

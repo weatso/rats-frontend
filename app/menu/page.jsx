@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL
 
 // ─── F&B Data ────────────────────────────────────────────────────────────────
 const fnbCategories = [
@@ -67,20 +67,15 @@ const fnbCategories = [
 ]
 
 // ─── Category Card ─────────────────────────────────────────────────────────────
-function CategorySection({ cat, index }) {
+function CategorySection({ cat, index, isDarkMode, hoverAccent }) {
   const [open, setOpen] = useState(index === 0)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-      className={`rounded-3xl border overflow-hidden ${cat.accentBorder} bg-white/[0.03]`}
-    >
+    <div className={`rounded-3xl border overflow-hidden ${cat.accentBorder} ${isDarkMode ? 'bg-white/[0.03]' : 'bg-black/[0.03]'}`} >
       {/* Header */}
       <button
         onClick={() => setOpen(p => !p)}
-        className={`w-full flex items-center justify-between px-7 py-6 transition-all duration-300 ${open ? cat.accentBg : 'hover:bg-white/5'}`}
+        className={`w-full flex items-center justify-between px-7 py-6 transition-all duration-300 ${open ? cat.accentBg : (isDarkMode ? 'hover:bg-white/5' : 'hover:bg-black/5')}`}
       >
         <div className="flex items-center gap-4">
           <span className="text-3xl">{cat.emoji}</span>
@@ -88,7 +83,7 @@ function CategorySection({ cat, index }) {
             <p className={`text-xs font-bold uppercase tracking-[0.3em] ${cat.accentText} mb-0.5`}>
               Kategori
             </p>
-            <h3 className="text-xl font-black uppercase tracking-tight text-white">
+            <h3 className="text-xl font-black uppercase tracking-tight">
               {cat.label}
             </h3>
           </div>
@@ -99,7 +94,7 @@ function CategorySection({ cat, index }) {
           </span>
           <ChevronDown
             size={20}
-            className={`transition-transform duration-400 ${open ? 'rotate-180 ' + cat.accentText : 'text-white/30'}`}
+            className={`transition-transform duration-400 ${open ? 'rotate-180 ' + cat.accentText : (isDarkMode ? 'text-white/30' : 'text-black/30')}`}
           />
         </div>
       </button>
@@ -114,21 +109,21 @@ function CategorySection({ cat, index }) {
             transition={{ duration: 0.4, ease: [0.33, 1, 0.68, 1] }}
             className="overflow-hidden"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px border-t border-white/5">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px border-t ${isDarkMode ? 'border-white/5' : 'border-black/5'}`}>
               {cat.items.map((item, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: idx * 0.04 }}
-                  className="px-6 py-5 border-b border-white/5 hover:bg-white/5 transition-colors duration-200 group"
+                  className={`px-6 py-5 border-b transition-colors duration-200 group ${isDarkMode ? 'border-white/5 hover:bg-white/5' : 'border-black/5 hover:bg-black/5'}`}
                 >
                   <div className="flex flex-col h-full justify-between">
                     <div>
-                      <h4 className="text-base font-bold text-white group-hover:text-brand-pink transition-colors leading-tight mb-1">
+                      <h4 className={`text-base font-bold transition-colors leading-tight mb-1 ${hoverAccent}`}>
                         {item.name}
                       </h4>
-                      <p className="text-xs text-white/40 font-light">{item.desc}</p>
+                      <p className={`text-xs font-light ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>{item.desc}</p>
                     </div>
                     <p className={`text-lg font-black font-mono mt-3 ${cat.accentText}`}>
                       {item.price}
@@ -140,14 +135,32 @@ function CategorySection({ cat, index }) {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function FnbMenuPage() {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('rats_theme')
+      if (saved) return saved === 'dark'
+    }
+    return true
+  })
+
+  useEffect(() => {
+    const saved = localStorage.getItem('rats_theme')
+    if (saved) setIsDarkMode(saved === 'dark')
+  }, [])
+
+  const hoverAccent = isDarkMode ? 'group-hover:text-brand-blue' : 'group-hover:text-brand-pink'
+  const accentText = isDarkMode ? 'text-brand-blue' : 'text-brand-pink'
+  const accentBg = isDarkMode ? 'bg-brand-blue' : 'bg-brand-pink'
+  const accentShadow = isDarkMode ? 'shadow-brand-blue/20' : 'shadow-brand-pink/20'
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div suppressHydrationWarning className={`min-h-screen ${isDarkMode ? 'bg-brand-black text-white' : 'bg-brand-white text-brand-black'}`}>
       {/* Background noise texture */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.03] z-0"
@@ -158,20 +171,15 @@ export default function FnbMenuPage() {
       />
 
       {/* Ambient glow */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-pink/5 blur-[120px] pointer-events-none z-0" />
+      <div className={`fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] blur-[120px] pointer-events-none z-0 ${isDarkMode ? 'bg-brand-blue/5' : 'bg-brand-pink/5'}`} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 py-16">
 
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="flex items-center justify-between mb-16"
-        >
+        <div className="flex items-center justify-between mb-16">
           <Link
             href="/"
-            className="group flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors duration-300"
+            className={`group flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 ${isDarkMode ? 'text-white/50 hover:text-white' : 'text-black/50 hover:text-black'}`}
           >
             <ArrowLeft
               size={14}
@@ -180,49 +188,39 @@ export default function FnbMenuPage() {
             Back to Home
           </Link>
 
-          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/20">
+          <span className={`text-[10px] font-bold uppercase tracking-[0.4em] ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}>
             RATS GAME — Menu
           </span>
-        </motion.div>
+        </div>
 
         {/* Hero text */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
-          className="mb-16"
-        >
-          <p className="text-brand-pink font-mono text-xs uppercase tracking-[0.4em] mb-5">
+        <div className="mb-16">
+          <p className={`${accentText} font-mono text-xs uppercase tracking-[0.4em] mb-5 transition-colors duration-700`}>
             Food & Beverages
           </p>
           <h1 className="text-6xl md:text-8xl lg:text-[10vw] font-display font-black uppercase tracking-tightest leading-none">
             OUR{' '}
-            <span className="text-white/15">MENU</span>
+            <span className={`transition-colors duration-700 ${isDarkMode ? 'text-white/15' : 'text-black/15'}`}>MENU</span>
           </h1>
-          <p className="text-white/40 text-lg font-light mt-6 max-w-xl leading-relaxed">
+          <p className={`text-lg font-light mt-6 max-w-xl leading-relaxed transition-colors duration-700 ${isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
             Nikmati berbagai pilihan makanan dan minuman premium selama sesi gaming Anda. Semua tersedia untuk dipesan langsung di meja Anda.
           </p>
-        </motion.div>
+        </div>
 
         {/* Category sections */}
         <div className="flex flex-col gap-4">
           {fnbCategories.map((cat, i) => (
-            <CategorySection key={cat.key} cat={cat} index={i} />
+            <CategorySection key={cat.key} cat={cat} index={i} isDarkMode={isDarkMode} hoverAccent={hoverAccent} />
           ))}
         </div>
 
         {/* Footer CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="mt-20 py-16 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8"
-        >
+        <div className={`mt-20 py-16 border-t flex flex-col md:flex-row items-center justify-between gap-8 ${isDarkMode ? 'border-white/5' : 'border-black/5'}`}>
           <div>
             <h3 className="text-3xl font-black uppercase tracking-tightest mb-2">
               Siap Gaming?
             </h3>
-            <p className="text-white/40 text-sm">
+            <p className={`text-sm transition-colors duration-700 ${isDarkMode ? 'text-white/40' : 'text-black/60'}`}>
               Buat reservasi sekarang dan nikmati menu di atas sambil main!
             </p>
           </div>
@@ -230,11 +228,11 @@ export default function FnbMenuPage() {
             href={`${API_BASE}/admin/live-lobby`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-10 py-5 rounded-full bg-brand-pink text-white font-black uppercase text-sm tracking-widest hover:scale-105 transition-transform shadow-2xl shadow-brand-pink/20 whitespace-nowrap"
+            className={`px-10 py-5 rounded-full text-white font-black uppercase text-sm tracking-widest hover:scale-105 transition-all shadow-2xl whitespace-nowrap ${accentBg} ${accentShadow}`}
           >
             Reservasi Sekarang →
           </a>
-        </motion.div>
+        </div>
       </div>
     </div>
   )

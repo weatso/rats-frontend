@@ -1,11 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Check, Copy, MapPin, Smartphone, Mail, Loader2, AlertCircle, Download } from 'lucide-react'
-import { supabase } from '../lib/supabase'
-import emailjs from '@emailjs/browser'
+import { X, Check, Copy, MapPin, Smartphone, Loader2, AlertCircle } from 'lucide-react'
 import RatsLogo from '../components/RatsLogo'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL
 
 const STEPS = [
   { id: 0, title: 'Cabang', subtitle: 'Pilih lokasi bermain' },
@@ -31,8 +29,6 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
   const [isSuccess, setIsSuccess] = useState(false)
   const [copied, setCopied] = useState(false)
   const [bookingId, setBookingId] = useState('')
-  const [isEmailSent, setIsEmailSent] = useState(false)
-  const [isSendingEmail, setIsSendingEmail] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -112,41 +108,6 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
       document.body.removeChild(el)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    })
-  }
-
-  const handleSendEmail = () => {
-    if (!reservationData.email) return
-    setIsSendingEmail(true)
-
-    const templateParams = {
-      to_name: reservationData.name,
-      to_email: reservationData.email,
-      booking_id: bookingId,
-      branch_name: selectedBranch?.name,
-      room_name: selectedRoom?.name,
-      reservation_date: reservationData.date,
-      start_time: reservationData.startTime,
-      duration: reservationData.duration,
-      total_price: totalPrice.toLocaleString(),
-      wa_number: reservationData.whatsapp
-    }
-
-    emailjs.send(
-      'service_cp91h8w',
-      'template_d1rio69',
-      templateParams,
-      '5ljR8WaMhxCYC_SqA'
-    )
-    .then(() => {
-      setIsEmailSent(true)
-      setIsSendingEmail(false)
-      setTimeout(() => setIsEmailSent(false), 5000)
-    })
-    .catch((err) => {
-      console.error('EmailJS Full Error:', err)
-      setIsSendingEmail(false)
-      alert(`Gagal mengirim email: ${err.text || err.message || 'Cek Template ID Anda'}`)
     })
   }
 
@@ -234,10 +195,9 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
             </div>
           </div>
           <div className="mt-8 space-y-4 print:hidden">
-            <button onClick={handleSendEmail} disabled={isSendingEmail} className={`w-full py-5 rounded-full flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs shadow-xl transition-all ${isEmailSent ? 'bg-green-500 text-white' : 'bg-brand-pink text-white'}`}>
-              {isSendingEmail ? <Loader2 className="animate-spin" /> : (isEmailSent ? <Check /> : <Mail />)}
-              {isSendingEmail ? 'MENGIRIM...' : (isEmailSent ? 'EMAIL TERKIRIM!' : 'KIRIM NOTA KE EMAIL')}
-            </button>
+            <p className={`text-center text-xs ${theme.textMuted} uppercase tracking-widest`}>
+              Nota konfirmasi dikirim otomatis ke email Anda.
+            </p>
             <button onClick={() => window.print()} className="w-full py-5 rounded-full bg-brand-black text-white dark:bg-white dark:text-brand-black font-bold uppercase tracking-widest text-xs shadow-xl">SIMPAN PDF</button>
             <button onClick={onBackToHome} className={`${theme.textMuted} w-full text-[10px] font-bold uppercase tracking-widest text-center`}>Kembali Ke Beranda</button>
           </div>
@@ -333,15 +293,19 @@ export default function ReservationPage({ onBackToHome, isDarkMode }) {
 
               {step === 1 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {rooms.map(r => (
+                  {rooms.map(r => {
+                    const imgPath = r.image || '/images/RoomBiasa.jpg';
+                    const imgUrl = imgPath.startsWith('/') ? `${API_BASE}${imgPath}` : imgPath;
+                    return (
                     <button key={r.id} onClick={() => handleSelect('room', r.id)} className={`flex flex-col rounded-2xl border-2 text-left transition-all overflow-hidden ${reservationData.room === r.id ? 'border-brand-pink bg-brand-pink/10' : theme.border + ' ' + theme.cardBg}`}>
-                      <img src={r.image || '/assets/RoomBiasa.jpg'} className="w-full aspect-video object-cover" />
+                      <img src={imgUrl} className="w-full aspect-video object-cover" />
                       <div className="p-6">
                         <h3 className={`font-bold ${theme.text} mb-1`}>{r.name}</h3>
                         <p className="text-brand-pink font-display text-xl">IDR {r.price_per_hour ? r.price_per_hour.toLocaleString() : '0'}</p>
                       </div>
                     </button>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
 

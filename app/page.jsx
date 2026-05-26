@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import React, { useState, Suspense } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-// PERBAIKAN IMPORT ADA DI SINI (Semuanya pakai ../)
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Menu from '../components/Menu'
 import Roster from '../components/Roster'
 import Footer from '../components/Footer'
-import ReservationPage from '../pages/ReservationPage'
 import AboutPage from '../pages/AboutPage'
 import SmoothScroll from '../components/SmoothScroll'
+
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.weatso.id/booking'
 
 // A dynamic Marquee component that reacts to Dark/Light mode
 const Marquee = ({ text, isDarkMode }) => {
@@ -40,17 +40,32 @@ const Marquee = ({ text, isDarkMode }) => {
 }
 
 function App() {
-  const [view, setView] = useState('home') // 'home', 'reservasi', 'about'
+  const [view, setView] = useState('home') // 'home', 'about'
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(true)
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('rats_theme')
+      if (saved) return saved === 'dark'
+    }
+    return true
+  })
+
+  React.useEffect(() => {
+    const saved = localStorage.getItem('rats_theme')
+    if (saved) setIsDarkMode(saved === 'dark')
+  }, [])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
-  const toggleTheme = () => setIsDarkMode(!isDarkMode)
+  
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode
+    setIsDarkMode(newTheme)
+    localStorage.setItem('rats_theme', newTheme ? 'dark' : 'light')
+  }
 
+  // Hard-redirect to the Laravel booking page — no longer handled in React
   const goToReservasi = () => {
-    setIsMenuOpen(false)
-    window.scrollTo(0, 0)
-    setView('reservasi')
+    window.location.href = BOOKING_URL
   }
 
   const goToAbout = () => {
@@ -64,15 +79,6 @@ function App() {
     window.scrollTo(0, 0)
   }
 
-  if (view === 'reservasi') {
-    return (
-      <Suspense fallback={<div className="h-screen w-full bg-brand-black flex items-center justify-center text-white font-display">Loading...</div>}>
-        <div className="noise-overlay" />
-        <ReservationPage onBackToHome={backToHome} isDarkMode={isDarkMode} />
-      </Suspense>
-    )
-  }
-
   if (view === 'about') {
     return (
       <Suspense fallback={<div className="h-screen w-full bg-brand-black flex items-center justify-center text-white font-display">Loading Story...</div>}>
@@ -84,7 +90,7 @@ function App() {
 
   return (
     <SmoothScroll>
-      <div className={`relative min-h-screen transition-colors duration-700 ${isDarkMode ? 'bg-brand-black text-white' : 'bg-brand-white text-brand-black'}`}>
+      <div suppressHydrationWarning className={`relative min-h-screen ${isDarkMode ? 'bg-brand-black text-white' : 'bg-brand-white text-brand-black'}`}>
         <div className="noise-overlay" />
 
         <Navbar

@@ -121,18 +121,18 @@ export default function Hero({ isDarkMode, onReservasi }) {
             RATS ALWAYS LOVES YOU
           </p>
 
-          {/* Native Next.js booking flow */}
+          {/* Redirects to Laravel booking page */}
           <MagneticButton>
-            <button
-              onClick={onReservasi}
-              className={`px-12 py-5 rounded-full font-bold uppercase text-sm tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-xl ${
+            <a
+              href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.weatso.id/booking'}
+              className={`inline-block px-12 py-5 rounded-full font-bold uppercase text-sm tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-xl ${
                 isDarkMode
                   ? 'bg-brand-blue text-white hover:bg-white hover:text-brand-black'
                   : 'bg-brand-black text-white hover:bg-brand-pink'
               }`}
             >
               Reservasi Sekarang
-            </button>
+            </a>
           </MagneticButton>
         </motion.div>
       </div>
