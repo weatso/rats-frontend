@@ -1,9 +1,21 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // PERBAIKAN: Baris import LogoPink dan LogoBiru dihapus dari sini.
 
 export default function RatsLogo({ className = "w-12 h-12", isDarkMode = true }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Mencegah Hydration Mismatch: Jangan render logo yang bergantung pada tema
+  // sampai komponen benar-benar di-mount di sisi client (browser).
+  if (!mounted) {
+    return <div className={`${className} relative flex items-center justify-center opacity-0`} />
+  }
+
   // PERBAIKAN: Langsung gunakan jalur string yang mengarah ke folder public/assets
   // Mapping sesuai permintaan: Dark -> Biru, Light -> Pink
   const currentLogo = isDarkMode ? '/assets/LogoBiru.svg' : '/assets/LogoPink.svg'

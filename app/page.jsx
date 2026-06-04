@@ -42,13 +42,7 @@ const Marquee = ({ text, isDarkMode }) => {
 function App() {
   const [view, setView] = useState('home') // 'home', 'about'
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('rats_theme')
-      if (saved) return saved === 'dark'
-    }
-    return true
-  })
+  const [isDarkMode, setIsDarkMode] = useState(true)
 
   React.useEffect(() => {
     const saved = localStorage.getItem('rats_theme')
