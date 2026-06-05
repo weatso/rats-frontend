@@ -225,7 +225,7 @@ export default function FnbMenuPage() {
             </p>
           </div>
           <a
-            href={`${API_BASE}/admin/live-lobby`}
+            href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.demo-weatso.my.id/booking'}
             target="_blank"
             rel="noopener noreferrer"
             className={`px-10 py-5 rounded-full text-white font-black uppercase text-sm tracking-widest hover:scale-105 transition-all shadow-2xl whitespace-nowrap ${accentBg} ${accentShadow}`}
