@@ -226,7 +226,7 @@ export default function Roster({ isDarkMode, onReservasi }) {
             transition={{ duration: 0.8, delay: (i % 2) * 0.2 }}
             className="group cursor-pointer"
           >
-            <a href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.weatso.id/booking'} className="block">
+            <a href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.demo-weatso.my.id/booking'} className="block">
             <div className={`relative aspect-[16/10] overflow-hidden rounded-sm mb-8 ${isDarkMode ? 'bg-white/5' : 'bg-brand-black/5'}`}>
               <motion.img
                 whileHover={{ scale: 1.05 }}

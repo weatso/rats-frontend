@@ -83,7 +83,7 @@ export default function Footer({ isDarkMode, onReservasi, onAbout, onHome }) {
 
             <MagneticButton>
               <a
-                href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.weatso.id/booking'}
+                href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.demo-weatso.my.id/booking'}
                 className={`group px-12 py-6 rounded-full flex items-center gap-4 transition-all ${buttonClass}`}
               >
                 <span className="text-xl font-display uppercase tracking-widest">Reservasi</span>

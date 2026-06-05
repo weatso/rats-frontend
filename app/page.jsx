@@ -11,7 +11,7 @@ import Footer from '../components/Footer'
 import AboutPage from '../pages/AboutPage'
 import SmoothScroll from '../components/SmoothScroll'
 
-const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.weatso.id/booking'
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.demo-weatso.my.id/booking'
 
 // A dynamic Marquee component that reacts to Dark/Light mode
 const Marquee = ({ text, isDarkMode }) => {

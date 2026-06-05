@@ -124,7 +124,7 @@ export default function Hero({ isDarkMode, onReservasi }) {
           {/* Redirects to Laravel booking page */}
           <MagneticButton>
             <a
-              href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.weatso.id/booking'}
+              href={process.env.NEXT_PUBLIC_BOOKING_URL || 'https://ratsgame.demo-weatso.my.id/booking'}
               className={`inline-block px-12 py-5 rounded-full font-bold uppercase text-sm tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-xl ${
                 isDarkMode
                   ? 'bg-brand-blue text-white hover:bg-white hover:text-brand-black'
