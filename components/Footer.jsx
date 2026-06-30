@@ -24,10 +24,22 @@ export default function Footer({ isDarkMode, onReservasi, onAbout, onHome }) {
   const currentYear = new Date().getFullYear()
 
   const branches = [
-    { id: '01', addr: 'Simongan No 57, Semarang' },
-    { id: '02', addr: 'Mulawarman Raya 11D, Semarang' },
-    { id: '03', addr: 'Mulawarman Raya 11A, Semarang' },
-    { id: '5A', addr: 'Pleburan Barat 7A, Semarang' }
+    { 
+      name: 'Chapter 01 Simongan', 
+      link: 'https://maps.app.goo.gl/w8wTecmiAsTDTUHQ9'
+    },
+    { 
+      name: 'Chapter 02 Tembalang', 
+      link: 'https://maps.app.goo.gl/EJQ3D2SRZ6APvRMf7'
+    },
+    { 
+      name: 'Chapter 03 Tembalang', 
+      link: 'https://maps.app.goo.gl/SGrR1fxXHkvt1fR39'
+    },
+    { 
+      name: 'Chapter 05A Pleburan', 
+      link: 'https://maps.app.goo.gl/8SKP35yt1Z3eN2SeA'
+    }
   ]
 
   const bgClass = isDarkMode ? 'bg-brand-black text-white' : 'bg-brand-white text-brand-black'
@@ -51,14 +63,14 @@ export default function Footer({ isDarkMode, onReservasi, onAbout, onHome }) {
             </motion.h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-               {branches.map(b => (
-                 <div key={b.id} className="flex items-start gap-4">
+               {branches.map((b, i) => (
+                 <a key={i} href={b.link} target="_blank" rel="noopener noreferrer" className="flex items-start gap-4 hover:opacity-75 transition-opacity group">
                     <MapPin className="text-brand-pink shrink-0 mt-1" size={16} />
                     <div>
-                        <p className="font-bold uppercase text-[8px] tracking-widest mb-1 opacity-50">Branch {b.id}</p>
-                        <p className="text-sm opacity-80">{b.addr}</p>
+                        <p className="font-bold uppercase text-[10px] tracking-widest mb-1 opacity-50 group-hover:text-brand-pink transition-colors">{b.name}</p>
+                        <p className="text-sm opacity-80 capitalize">Lihat detail maps</p>
                     </div>
-                 </div>
+                 </a>
                ))}
             </div>
 

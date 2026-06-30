@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
+import Image from 'next/image'
 import MagneticButton from './MagneticButton'
 
 export default function Hero({ isDarkMode, onReservasi }) {
@@ -64,14 +65,17 @@ export default function Hero({ isDarkMode, onReservasi }) {
         <div
           className={`absolute inset-0 z-10 transition-colors duration-700 ${gradientClass}`}
         />
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=2070&auto=format&fit=crop"
           alt="Premium PS5 Gaming Setup"
-          className={`w-full h-full object-cover transition-all duration-700 ${
+          fill
+          className={`object-cover transition-all duration-700 ${
             isDarkMode
               ? 'brightness-[0.3] saturate-[0.5]'
               : 'brightness-110 saturate-[0.8]'
           }`}
+          quality={80}
+          priority
         />
       </motion.div>
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUpRight, ExternalLink, ChevronDown } from 'lucide-react'
 
@@ -7,21 +8,21 @@ const consoles = [
     id: 1,
     name: "VVIP ROOM",
     desc: "PS 5 30th Anniversary + Nintendo Switch OLED + Netflix",
-    image: "/assets/VVIPRoom.jpg",
+    image: "/images/VVIPRoom.jpg",
     price: "35k / Hour"
   },
   {
     id: 2,
     name: "Racing Simulator",
     desc: "Playseat Rig F1 + Thrustmaster T300RS + PS 5 Pro",
-    image: "/assets/RuangBalap.jpg",
+    image: "/images/RuangBalap.jpg",
     price: "30k / Hour"
   },
   {
     id: 3,
     name: "VIP PS4 PRO",
     desc: "Private Room + Nintendo Switch OLED + Netflix",
-    image: "/assets/RoomBiasa.jpg",
+    image: "/images/RoomBiasa.jpg",
     price: "25k / Hour"
   }
 ]
@@ -67,10 +68,6 @@ const branches = [
 ]
 
 function GameListSection({ isDarkMode }) {
-  const [selectedBranch, setSelectedBranch] = useState(null)
-
-  const selected = branches.find(b => b.id === selectedBranch)
-
   return (
     <div id="games" className="mt-20 mb-8">
       {/* Section header */}
@@ -91,90 +88,38 @@ function GameListSection({ isDarkMode }) {
           </span>
         </h3>
         <p className={`text-sm font-light max-w-md leading-relaxed ${isDarkMode ? 'text-white/40' : 'text-brand-black/50'}`}>
-          Pilih cabang di bawah untuk melihat daftar lengkap game yang tersedia. Setiap cabang memiliki koleksi yang berbeda.
+          Jelajahi semua game yang tersedia di seluruh cabang RATS Game dengan filter cabang interaktif bergaya PS5.
         </p>
       </motion.div>
 
-      {/* Branch selector buttons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {branches.map((branch, i) => (
-          <motion.button
-            key={branch.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-            onClick={() => setSelectedBranch(selectedBranch === branch.id ? null : branch.id)}
-            className={`
-              group relative overflow-hidden rounded-2xl border px-6 py-5 text-left transition-all duration-300
-              ${branch.borderColor} ${branch.bgHover}
-              ${selectedBranch === branch.id
-                ? `bg-gradient-to-br ${branch.color} border-transparent shadow-2xl scale-[1.02]`
-                : `${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-black/5 border-black/10'}`
-              }
-            `}
-          >
-            <span className={`block text-[10px] font-bold uppercase tracking-widest mb-1 ${selectedBranch === branch.id ? 'text-white/70' : (isDarkMode ? 'text-white/40' : 'text-black/40')}`}>
-              RATS GAME
+      {/* Single CTA Card → /games */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className={`rounded-3xl border ${isDarkMode ? 'border-white/10 bg-white/5' : 'border-black/10 bg-black/5'} p-5 sm:p-8 flex flex-col gap-5`}>
+          <div>
+            <span className="block text-xs font-bold uppercase tracking-[0.3em] mb-2 text-brand-pink">
+              Global Catalog
             </span>
-            <span className={`block text-base font-black uppercase tracking-tight ${selectedBranch === branch.id ? 'text-white' : (isDarkMode ? 'text-white' : 'text-brand-black')}`}>
-              {branch.label}
-            </span>
-            <ChevronDown
-              size={14}
-              className={`absolute bottom-4 right-4 transition-transform duration-300 ${selectedBranch === branch.id ? 'rotate-180 text-white/70' : (isDarkMode ? 'text-white/30' : 'text-black/30')}`}
-            />
-          </motion.button>
-        ))}
-      </div>
-
-      {/* Game list CTA panel */}
-      <AnimatePresence mode="wait">
-        {selected && (
-          <motion.div
-            key={selected.id}
-            initial={{ opacity: 0, y: 16, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: -8, height: 0 }}
-            transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
-            className="overflow-hidden"
+            <h4 className={`text-2xl font-black uppercase tracking-tightest mb-1 ${isDarkMode ? 'text-white' : 'text-brand-black'}`}>
+              Lihat Semua Game
+            </h4>
+            <p className={`text-sm ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>
+              Filter game berdasarkan cabang. UI interaktif bergaya PS5 — temukan game impianmu.
+            </p>
+          </div>
+          <Link
+            href="/games"
+            className="group inline-flex items-center justify-center gap-3 w-full sm:w-auto px-6 py-3.5 rounded-2xl font-bold uppercase text-sm tracking-widest transition-all duration-300 bg-gradient-to-r from-brand-pink to-red-600 text-white hover:scale-105 shadow-xl shadow-brand-pink/30"
           >
-            <div className={`rounded-3xl border ${isDarkMode ? 'border-white/10 bg-white/5' : 'border-black/10 bg-black/5'} p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6`}>
-              <div>
-                <span className={`block text-xs font-bold uppercase tracking-[0.3em] mb-2 ${selected.accentColor}`}>
-                  {selected.label}
-                </span>
-                <h4 className={`text-2xl font-black uppercase tracking-tightest mb-1 ${isDarkMode ? 'text-white' : 'text-brand-black'}`}>
-                  Lihat Daftar Game Lengkap
-                </h4>
-                <p className={`text-sm ${isDarkMode ? 'text-white/40' : 'text-black/40'}`}>
-                  Buka Google Sheets untuk melihat seluruh judul game yang tersedia di cabang ini.
-                </p>
-              </div>
-              <a
-                href={selected.sheetUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`group flex items-center gap-3 px-8 py-4 rounded-2xl font-bold uppercase text-sm tracking-widest transition-all duration-300 whitespace-nowrap bg-gradient-to-r ${selected.color} text-white hover:scale-105 shadow-xl`}
-              >
-                Buka Game List
-                <ExternalLink size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Hint when nothing selected */}
-      {!selectedBranch && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className={`text-center text-xs uppercase tracking-widest py-6 ${isDarkMode ? 'text-white/20' : 'text-black/20'}`}
-        >
-          ↑ Pilih cabang di atas untuk melihat daftar game
-        </motion.p>
-      )}
+            Buka Game Catalog
+            <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+          </Link>
+        </div>
+      </motion.div>
     </div>
   )
 }

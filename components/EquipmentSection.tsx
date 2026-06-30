@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
@@ -153,11 +154,13 @@ export default function EquipmentSection() {
                     >
                       <div>
                         {game.image_url ? (
-                          <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden mb-4 bg-neutral-950">
-                            <img
+                          <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden mb-4 bg-neutral-950">
+                            <Image
                               src={game.image_url}
                               alt={game.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-500"
+                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 25vw"
                             />
                           </div>
                         ) : (
@@ -203,11 +206,13 @@ export default function EquipmentSection() {
                     >
                       <div>
                         {item.image ? (
-                          <div className="aspect-square w-full rounded-2xl overflow-hidden mb-4 bg-neutral-950">
-                            <img
+                          <div className="relative aspect-square w-full rounded-2xl overflow-hidden mb-4 bg-neutral-950">
+                            <Image
                               src={`${API_BASE}/storage/${item.image}`}
                               alt={item.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-500"
+                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 25vw"
                             />
                           </div>
                         ) : (

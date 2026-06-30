@@ -16,9 +16,8 @@ export default function RatsLogo({ className = "w-12 h-12", isDarkMode = true })
     return <div className={`${className} relative flex items-center justify-center opacity-0`} />
   }
 
-  // PERBAIKAN: Langsung gunakan jalur string yang mengarah ke folder public/assets
-  // Mapping sesuai permintaan: Dark -> Biru, Light -> Pink
-  const currentLogo = isDarkMode ? '/assets/LogoBiru.svg' : '/assets/LogoPink.svg'
+  // PERBAIKAN: Langsung gunakan jalur string yang mengarah ke folder public/images
+  const currentLogo = isDarkMode ? '/images/LogoBiru.svg' : '/images/LogoPink.svg'
 
   return (
     <div className={`${className} relative flex items-center justify-center`}>
