@@ -2,6 +2,7 @@
 
 import React, { useState, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTheme } from 'next-themes'
 
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
@@ -43,11 +44,17 @@ function App() {
   const [view, setView] = useState('home') // 'home', 'about'
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(true)
+  const { setTheme } = useTheme()
 
   React.useEffect(() => {
     const saved = localStorage.getItem('rats_theme')
-    if (saved) setIsDarkMode(saved === 'dark')
-  }, [])
+    if (saved) {
+      setIsDarkMode(saved === 'dark')
+      setTheme(saved === 'dark' ? 'dark' : 'light')
+    } else {
+      setTheme('dark') // Default is dark
+    }
+  }, [setTheme])
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   
@@ -55,6 +62,7 @@ function App() {
     const newTheme = !isDarkMode
     setIsDarkMode(newTheme)
     localStorage.setItem('rats_theme', newTheme ? 'dark' : 'light')
+    setTheme(newTheme ? 'dark' : 'light')
   }
 
   // Hard-redirect to the Laravel booking page — no longer handled in React
